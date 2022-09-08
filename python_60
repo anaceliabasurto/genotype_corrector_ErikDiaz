@@ -1,0 +1,17 @@
+#PBS -N haplo_cor_60
+#PBS -l nodes=1:ppn=8,vmem=16gb,walltime=250:00:00
+#PBS -q default
+
+cd $PBS_O_WORKDIR
+
+module load Genotype-corrector/1.0
+
+python -m schnablelab.imputation.GC qc_sd ABH_CR_60.map F2_seg_dist.map --population F2
+
+python -m schnablelab.imputation.GC qc_hetero F2_seg_dist.map F2_con_geno.map
+
+python -m schnablelab.imputation.GC correct config_file.txt F2_con_geno.map --debug
+
+python -m schnablelab.imputation.GC cleanup F2_con_geno.corrected.map.debug F2_modified.map
+
+python -m schnablelab.imputation.GC bin F2_con_geno.corrected.map F2_60_CR_final.map
